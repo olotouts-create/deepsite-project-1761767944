@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOTION APPETITES | Food & Travel Photography</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <style>
+        :root {
+            --ochre: #c17d11;
+            --turquoise: #1abc9c;
+            --saffron: #f1c40f;
+            --charcoal: #2c3e50;
+            --sand: #ecf0f1;
+        }
+        
+        body {
+            font-family: 'Playfair Display', serif;
+            background-color: var(--sand);
+            color: var(--charcoal);
+            overflow-x: hidden;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%232c3e50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>'), auto;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Archivo Black', sans-serif;
+            letter-spacing: -0.03em;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .video-container video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: 0;
+        }
+        
+        .title-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .broken-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(200px, auto);
+            gap: 20px;
+            padding: 40px;
+        }
+        
+        .grid-item {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .grid-item:hover {
+            transform: scale(1.03);
+        }
+        
+        .grid-item:hover .image-overlay {
+            opacity: 1;
+        }
+        
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .region-section {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .region-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            mix-blend-mode: difference;
+            color: white;
+        }
+        
+        .horizontal-scroll {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            height: 80vh;
+            align-items: center;
+        }
+        
+        .horizontal-scroll img {
+            scroll-snap-align: start;
+            height: 70vh;
+            margin-right: 20px;
+            object-fit: cover;
+        }
+        
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: var(--ochre);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+        
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -12px;
+            background-color: var(--sand);
+            border: 4px solid var(--turquoise);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        
+        .left {
+            left: 0;
+        }
+        
+        .right {
+            left: 50%;
+        }
+        
+        .right::after {
+            left: -12px;
+        }
+        
+        .manifesto {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .contact-form input, .contact-form textarea {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--charcoal);
+            width: 100%;
+            padding: 10px 0;
+            margin-bottom: 30px;
+            color: var(--charcoal);
+        }
+        
+        .contact-form input:focus, .contact-form textarea:focus {
+            outline: none;
+            border-bottom: 1px solid var(--turquoise);
+        }
+        
+        .glitch {
+            position: relative;
+        }
+        
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--turquoise);
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+        
+        .glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--saffron);
+            animation: glitch-anim-2 2s infinite linear alternate-reverse;
+        }
+        
+        @keyframes glitch-anim-1 {
+            0% { clip-path: polygon(0 0%, 100% 0%, 100% 45%, 0 45%); }
+            20% { clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%); }
+            40% { clip-path: polygon(0 40%, 100% 40%, 100% 75%, 0 75%); }
+            60% { clip-path: polygon(0 80%, 100% 80%, 100% 20%, 0 20%); }
+            80% { clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%); }
+            100% { clip-path: polygon(0 0%, 100% 0%, 100% 60%, 0 60%); }
+        }
+        
+        @keyframes glitch-anim-2 {
+            0% { clip-path: polygon(0 20%, 100% 20%, 100% 30%, 0 30%); }
+            20% { clip-path: polygon(0 50%, 100% 50%, 100% 90%, 0 90%); }
+            40% { clip-path: polygon(0 10%, 100% 10%, 100% 70%, 0 70%); }
+            60% { clip-path: polygon(0 30%, 100% 30%, 100% 60%, 0 60%); }
+            80% { clip-path: polygon(0 80%, 100% 80%, 100% 100%, 0 100%); }
+            100% { clip-path: polygon(0 50%, 100% 50%, 100% 20%, 0 20%); }
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 40px;
+            border: 2px solid white;
+            border-radius: 12px;
+        }
+        
+        .scroll-indicator::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: white;
+            border-radius: 2px;
+            animation: scroll 2s infinite;
+        }
+        
+        @keyframes scroll {
+            0% { transform: translateY(0) translateX(-50%); opacity: 1; }
+            100% { transform: translateY(15px) translateX(-50%); opacity: 0; }
+        }
+        
+        .film-strip {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: repeating-linear-gradient(
+                to right,
+                black,
+                black 20px,
+                white 20px,
+                white 40px
+            );
+            z-index: 100;
+        }
+        
+        .film-strip::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), transparent);
+        }
+        
+        .cursor-camera {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%232c3e50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>'), auto;
+        }
+        
+        .cursor-fork {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%232c3e50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M12 12v6"/><path d="M16 6v12"/><path d="M8 6v12"/></svg>'), auto;
+        }
+        
+        .parallax {
+            transition: transform 0.1s ease-out;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-50 mix-blend-difference text-white p-6 flex justify-between items-center">
+        <div class="text-2xl font-bold">MA</div>
+        <div class="hidden md:flex space-x-8">
+            <a href="#gallery" class="hover:text-ochre transition">Gallery</a>
+            <a href="#regions" class="hover:text-turquoise transition">Regions</a>
+            <a href="#timeline" class="hover:text-saffron transition">Timeline</a>
+            <a href="#manifesto" class="hover:text-ochre transition">Manifesto</a>
+            <a href="#contact" class="hover:text-turquoise transition">Contact</a>
+        </div>
+        <div class="md:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </div>
+    </nav>
+
+    <!-- Landing Experience -->
+    <section class="video-container">
+        <video autoplay muted loop>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-smoke-coming-out-of-a-barbecue-42900-large.mp4" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 bg-black bg-opacity-30 flex flex-col justify-center items-center text-center px-4">
+            <h1 class="glitch text-6xl md:text-9xl font-bold mb-4 text-white" data-text="MOTION APPETITES">MOTION APPETITES</h1>
+            <p class="text-xl md:text-3xl mb-8 text-white">Food & Travel shots • Street food • Local eats • Global vibes</p>
+            <p class="text-sm text-white absolute bottom-20">Witness of the real</p>
+            <div class="scroll-indicator"></div>
+        </div>
+    </section>
+
+    <!-- Broken Grid Gallery -->
+    <section id="gallery" class="py-20 bg-sand">
+        <div class="broken-grid">
+            <div class="grid-item cursor-camera" style="grid-column: span 6; grid-row: span 2;">
+                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7f63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Middle Eastern Cuisine" class="w-full h-full object-cover">
+                <div class="image-overlay">
+                    <h3 class="text-white text-xl">Beirut, Lebanon</h3>
+                    <p class="text-white text-sm">2022 • Hummus with lamb</p>
+                </div>
+            </div>
+            <div class="grid-item cursor-fork" style="grid-column: span 4; grid-row: span 1; transform: rotate(2deg);">
+                <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Spices" class="w-full h-full object-cover">
+                <div class="image-overlay">
+                    <h3 class="text-white text-xl">Istanbul, Turkey</h3>
+                    <p class="text-white text-sm">2021 • Spice market</p>
+                </div>
+            </div>
+            <div class="grid-item cursor-camera" style="grid-column: span 5; grid-row: span 3; margin-top: -50px;">
+                <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Street Food" class="w-full h-full object-cover">
+                <div class="image-overlay">
+                    <h3 class="text-white text-xl">Cairo, Egypt</h3>
+                    <p class="text-white text-sm">2023 • Koshari street vendor</p>
+                </div>
+            </div>
+            <div class="grid-item cursor-fork" style="grid-column: span 3; grid-row: span 2; transform: rotate(-3deg); margin-left: 40px;">
+                <img src="https://images.unsplash.com/photo-1603105037880-880cd4edfb0d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Baklava" class="w-full h-full object-cover">
+                <div class="image-overlay">
+                    <h3 class="text-white text-xl">Damascus, Syria</h3>
+                    <p class="text-white text-sm">2020 • Baklava selection</
+</body>
+</html>
